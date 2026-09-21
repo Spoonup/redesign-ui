@@ -51,21 +51,27 @@ export const ShopPage = () => {
     return sorted;
   }, [category, searchTerm, sortBy]);
 
-  // Initial animation on mount
+  // Clean mount animation ensuring 100% opacity
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
-    gsap.from('#grid .dish', {
-      y: 80,
-      opacity: 0,
-      rotate: () => gsap.utils.random(-6, 6),
-      duration: 1.1,
-      ease: 'expo.out',
-      stagger: 0.07,
-      delay: 0.2
-    });
-  }, []);
+    const cards = containerRef.current?.querySelectorAll('#grid .dish');
+    if (!cards || cards.length === 0) return;
+
+    gsap.fromTo(
+      cards,
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        ease: 'power2.out',
+        stagger: 0.04,
+        clearProps: 'all'
+      }
+    );
+  }, [category]);
 
   return (
     <div ref={containerRef}>

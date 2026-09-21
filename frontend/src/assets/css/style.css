@@ -675,7 +675,17 @@ body::after {
 .chips button sup { font-family: var(--f-mono); font-size: 9.5px; margin-left: 3px; opacity: .7; }
 .sort { height: 46px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--paper-3); padding: 0 16px; font-size: 14px; font-weight: 600; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(250px, 100%, 340px), 1fr)); gap: clamp(14px, 2vw, 24px); padding: 32px 0 100px; }
-.grid .dish { width: auto; background: var(--paper-3); box-shadow: 0 1px 0 var(--line); }
+.grid .dish {
+  width: auto;
+  background: var(--paper-3);
+  box-shadow: 0 1px 0 var(--line);
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.grid .dish .dish__media img {
+  opacity: 1 !important;
+  filter: none !important;
+}
 .grid__empty { grid-column: 1/-1; text-align: center; padding: 60px 0; }
 .grid__empty .display { font-size: 38px; color: var(--forest); }
 
