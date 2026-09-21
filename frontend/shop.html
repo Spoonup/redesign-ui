@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop · SpoonUp</title>
+<meta name="description" content="The SpoonUp pantry: snacks, desserts, smoothies, healthy sweets, Kashmiri dry fruits and breakfast. No refined sugar.">
+<meta name="theme-color" content="#123e31">
+<link rel="icon" href="https://spoonupfoods.com/SpoonUp_Official_Logo_Transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Kalam:wght@400;700&family=Shrikhand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="shop">
+<div id="chrome-top"></div>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="page-hero__crumb mono">SpoonUp / Shop</div>
+      <h1 class="display" data-split>The <em>pantry.</em></h1>
+      <p class="page-hero__lede" data-reveal>Nutritious treats for everyday happiness. Things marked <b>Ready today</b> can be picked up from the Main Shop; <b>Deliver later</b> items need a delivery address.</p>
+    </div>
+  </section>
+
+  <div class="shopbar">
+    <div class="wrap">
+      <label class="search"><span class="sr-only">Search</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search chia, modak, walnuts…" autocomplete="off">
+      </label>
+      <select class="sort" id="sort" aria-label="Sort">
+        <option value="featured">Featured</option>
+        <option value="low">Price: low to high</option>
+        <option value="high">Price: high to low</option>
+        <option value="az">A → Z</option>
+      </select>
+      <div class="chips" id="chips" role="group" aria-label="Categories"></div>
+    </div>
+  </div>
+
+  <section class="wrap">
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<div id="chrome-bottom"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(() => {
+  const D = SPOONUP, $ = s => document.querySelector(s);
+  const G = window.gsap && window.Flip && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (G) gsap.registerPlugin(Flip);
+  const params = new URLSearchParams(location.search);
+  let cat = params.get('cat') || 'All', q = '', sort = 'featured';
+
+  const cats = ['All', ...D.categories];
+  $('#chips').innerHTML = cats.map(c => {
+    const n = c === 'All' ? D.products.length : D.products.filter(p => p.cat === c).length;
+    return `<button type="button" data-c="${c}" aria-pressed="${c === cat}">${c}<sup>${n}</sup></button>`;
+  }).join('');
+
+  // render every card once; filter by toggling display so Flip can animate between states
+  $('#grid').innerHTML = D.products.map((p, i) => SU_dish(p, i)).join('') +
+    `<div class="grid__empty" hidden><div class="display">Nothing on that spoon.</div><p>Try another word or category.</p></div>`;
+  const cards = [...document.querySelectorAll('#grid .dish')];
+
+  function apply(animate = true) {
+    const state = G && animate ? Flip.getState(cards) : null;
+    const term = q.trim().toLowerCase();
+    const visible = D.products.filter(p =>
+      (cat === 'All' || p.cat === cat) &&
+      (!term || (p.name + ' ' + p.sub + ' ' + p.cat + ' ' + p.desc).toLowerCase().includes(term)));
+    const order = [...visible];
+    if (sort === 'low') order.sort((a, b) => a.price - b.price);
+    if (sort === 'high') order.sort((a, b) => b.price - a.price);
+    if (sort === 'az') order.sort((a, b) => a.name.localeCompare(b.name));
+    cards.forEach(c => {
+      const i = order.findIndex(p => p.id === c.dataset.id);
+      c.style.display = i < 0 ? 'none' : '';
+      c.style.order = i;
+    });
+    $('.grid__empty').hidden = order.length > 0;
+    if (state) Flip.from(state, { duration: .7, ease: 'expo.inOut', scale: true, absolute: true,
+      onEnter: el => gsap.fromTo(el, { opacity: 0, scale: .6, rotate: -6 }, { opacity: 1, scale: 1, rotate: 0, duration: .7, ease: 'back.out(1.6)' }),
+      onLeave: el => gsap.to(el, { opacity: 0, scale: .6, duration: .4 }) });
+    const u = new URL(location); cat === 'All' ? u.searchParams.delete('cat') : u.searchParams.set('cat', cat); history.replaceState(null, '', u);
+  }
+
+  $('#chips').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    cat = b.dataset.c;
+    document.querySelectorAll('#chips button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    apply();
+  });
+  let t; $('#q').addEventListener('input', e => { clearTimeout(t); t = setTimeout(() => { q = e.target.value; apply(); }, 160); });
+  $('#sort').addEventListener('change', e => { sort = e.target.value; apply(); });
+  apply(false);
+
+  document.addEventListener('su:ready', () => {
+    if (!G) return;
+    gsap.from(cards.filter(c => c.style.display !== 'none'), { y: 80, opacity: 0, rotate: () => gsap.utils.random(-6, 6), duration: 1.1, ease: 'expo.out', stagger: .07, delay: .2 });
+  });
+})();
+</script>
+</body>
+</html>

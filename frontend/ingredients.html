@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Ingredients · SpoonUp</title>
+<meta name="description" content="Real ingredients, chosen for taste and nutrition in equal measure. High protein, no refined sugar, nothing you wouldn't find in a home kitchen.">
+<meta name="theme-color" content="#123e31">
+<link rel="icon" href="https://spoonupfoods.com/SpoonUp_Official_Logo_Transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Kalam:wght@400;700&family=Shrikhand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="ingredients">
+<div id="chrome-top"></div>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="page-hero__crumb mono">SpoonUp / Ingredients</div>
+      <h1 class="display" data-split>Nothing <em>hidden.</em></h1>
+      <p class="page-hero__lede" data-reveal>Real ingredients, chosen for taste and nutrition in equal measure. Here's exactly how we think about what goes in.</p>
+    </div>
+  </section>
+
+  <section class="wrap pillars">
+    <article class="pillar" data-reveal>
+      <div class="pillar__n">01</div>
+      <h3>High protein</h3>
+      <p>We build our recipes around ingredients such as nuts, seeds, dry fruits and whole grains, so a small serving carries real nutritional value. Our chia pudding even gets skyr and whey.</p>
+    </article>
+    <article class="pillar" data-reveal>
+      <div class="pillar__n">02</div>
+      <h3>No refined sugar</h3>
+      <p>Our sweet products are sweetened with natural alternatives like dates instead of refined white sugar. The smoothie and muesli have no added sugar at all.</p>
+    </article>
+    <article class="pillar" data-reveal>
+      <div class="pillar__n">03</div>
+      <h3>Real, recognisable</h3>
+      <p>We avoid unnecessary additives and use ingredients you would find in a home kitchen. If you can't pronounce it, it's probably not in here.</p>
+    </article>
+    <article class="pillar pillar--warn" data-reveal>
+      <div class="pillar__n">!</div>
+      <h3>Allergen note</h3>
+      <p>Several products contain nuts, dairy or gluten and are prepared in a shared kitchen. If you have an allergy, please check the product description and write to <a href="mailto:info@spoonupfoods.com">info@spoonupfoods.com</a> before ordering.</p>
+    </article>
+  </section>
+
+  <section class="pantry">
+    <div class="wrap">
+      <h2 class="display" data-split>The shelf.</h2>
+      <div class="jars" id="jars"></div>
+    </div>
+  </section>
+</main>
+
+<div id="chrome-bottom"></div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  // what's on the shelf, and where you'll find it
+  const shelf = [
+    ['Chia seeds', 'Chocolate chia pudding, dragon fruit smoothie', '#f2a33a'],
+    ['Skyr', 'Thick, strained, protein-rich. In the chia pudding', '#efe3cc'],
+    ['Dates', 'Our go-to natural sweetener', '#6b3f2a', '#fff'],
+    ['Cocoa', 'The chocolate in the chocolate pudding', '#3d2418', '#fff'],
+    ['Gulkand', 'Rose petal preserve inside the paan modak', '#e0457b', '#fff'],
+    ['Paan', 'Betel leaf, for that after-meal aroma', '#5e8c3a', '#fff'],
+    ['Sabudana', 'Tapioca pearls, the crunch in our tikkis and fries', '#fbf7ee'],
+    ['Sweet potato', 'Golden, earthy, in the tikki', '#c9702c', '#fff'],
+    ['Dragon fruit', 'The pink. All of it natural', '#d63a7a', '#fff'],
+    ['Kashmiri walnuts', 'Kernels rich in omega-3', '#7a5230', '#fff'],
+    ['Kashmiri almonds', 'Badam giri, rich in natural oils', '#e8c89a'],
+    ['Fennel', 'Sauf, for the end of a good meal', '#7fa64b', '#fff']
+  ];
+  document.getElementById('jars').innerHTML = shelf.map(([n, d, c, fg], i) =>
+    `<div class="jarcard" data-reveal="${(i % 4) * .06}" style="--c:${c};${fg ? '--fg:' + fg : ''}"><span class="mono">${String(i + 1).padStart(2, '0')}</span><div><b>${n}</b><br><span>${d}</span></div></div>`).join('');
+</script>
+</body>
+</html>

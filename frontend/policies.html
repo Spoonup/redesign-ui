@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Policies · SpoonUp</title>
+<meta name="description" content="SpoonUp shipping, cancellation, refund, privacy and terms.">
+<meta name="theme-color" content="#123e31">
+<link rel="icon" href="https://spoonupfoods.com/SpoonUp_Official_Logo_Transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Kalam:wght@400;700&family=Shrikhand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="policies">
+<div id="chrome-top"></div>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="page-hero__crumb mono">SpoonUp / Policies</div>
+      <h1 class="display" data-split>The fine <em>print.</em></h1>
+      <p class="page-hero__lede" data-reveal>Plain-language versions of how we deliver, refund and look after your data.</p>
+    </div>
+  </section>
+
+  <section class="wrap policy">
+    <div class="policy__tabs" role="tablist" id="tabs"></div>
+    <article class="policy__doc" id="doc" role="tabpanel"></article>
+  </section>
+</main>
+
+<div id="chrome-bottom"></div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+const P = {
+  shipping: ['Shipping & Delivery', 'Delivery availability and timing depend on the product, destination and service area shown at checkout.', [
+    ['Order fulfilment', 'Products marked for immediate pickup can be collected from the counter shown on your order. Products marked “Deliver later” require a complete delivery address.'],
+    ['Delivery estimates', 'Any delivery date or time is an estimate. Weather, traffic, carrier delays and other circumstances may affect fulfilment.'],
+    ['Address accuracy', 'Please provide a complete and accurate address and phone number. Additional charges may apply if an order must be re-routed or re-delivered due to incorrect details or an unavailable recipient.'],
+    ['Damaged or missing items', 'Contact us at info@spoonupfoods.com within 24 hours of delivery with your order number and clear photographs so we can investigate.']]],
+  refunds: ['Cancellation & Refunds', 'Because many SpoonUp products are freshly prepared or perishable, cancellations and returns are limited.', [
+    ['Cancellations', 'You may request cancellation before preparation or fulfilment begins. Once an order is being prepared, packed, dispatched or made specifically for you, it may not be cancellable.'],
+    ['Refund eligibility', 'If we cancel an order, charge you incorrectly, or confirm that an item arrived damaged, unsafe or materially different from the order, we will offer an appropriate replacement, credit or refund.'],
+    ['How to request help', 'Email info@spoonupfoods.com with your order number, issue details and supporting photographs within 24 hours of pickup or delivery.'],
+    ['Refund timing', 'Approved refunds are sent to the original payment method. Bank or payment-provider processing may take 5–10 business days after approval.']]],
+  privacy: ['Privacy Policy', 'Last updated: 12 September 2026', [
+    ['Information we collect', 'We may collect your name, phone number, email address, delivery address, order details and account information when you use our website or place an order.'],
+    ['How we use information', 'We use this information to process and deliver orders, provide customer support, send service messages, prevent fraud, meet legal obligations and improve our services.'],
+    ['Payments', 'Online payments are processed by our payment provider. SpoonUp does not store complete card or UPI credentials.'],
+    ['Sharing and retention', 'We share information only with service providers needed to fulfil your order or where required by law. We retain records only for as long as operational, tax and legal requirements demand.'],
+    ['Your choices', 'You may request access, correction or deletion of eligible personal information by emailing info@spoonupfoods.com.']]],
+  terms: ['Terms & Conditions', 'By accessing this website or placing an order, you agree to these terms.', [
+    ['Orders', 'Orders are accepted subject to product availability and successful confirmation. We may cancel or limit an order in case of pricing errors, stock issues, suspected misuse or circumstances beyond our control.'],
+    ['Prices and taxes', 'Prices are shown in Indian Rupees. Applicable GST and other charges are displayed before checkout.'],
+    ['Product information', 'We aim to keep descriptions and images accurate. Handmade food may naturally vary in appearance. Customers are responsible for checking ingredients and informing us of allergies before ordering.'],
+    ['Use of the website', 'You must not misuse the website, attempt unauthorised access, interfere with its operation or use it for unlawful activity.'],
+    ['Liability', 'To the extent permitted by law, SpoonUp is not responsible for indirect loss arising from website use, delayed fulfilment or matters outside our reasonable control. Your statutory consumer rights remain unaffected.'],
+    ['Contact', 'Questions about these terms may be sent to info@spoonupfoods.com. GSTIN: 29AJYPK3031G1ZX.']]]
+};
+const tabs = document.getElementById('tabs'), doc = document.getElementById('doc');
+tabs.innerHTML = Object.entries(P).map(([k, [t]]) => `<button role="tab" data-k="${k}">${t}<span>→</span></button>`).join('');
+function show(k, anim) {
+  if (!P[k]) k = 'shipping';
+  const [t, lede, secs] = P[k];
+  tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.k === k));
+  doc.innerHTML = `<h2>${t}</h2><p class="meta mono">${lede}</p>` + secs.map(([h, p]) => `<section><h3>${h}</h3><p>${p}</p></section>`).join('');
+  history.replaceState(null, '', '#' + k);
+  if (anim && window.gsap) gsap.from(doc.children, { y: 30, opacity: 0, duration: .7, ease: 'expo.out', stagger: .05 });
+}
+tabs.addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.k, true); });
+addEventListener('hashchange', () => show(location.hash.slice(1), true));
+show(location.hash.slice(1));
+</script>
+</body>
+</html>
