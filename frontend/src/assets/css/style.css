@@ -317,7 +317,7 @@ body::after {
 .hero__proof span { font-size: 13px; color: var(--muted); }
 
 /* the table of draggable polaroids */
-.table { position: relative; height: clamp(400px, 38vw, 600px); width: 100%; overflow: hidden; }
+.table { position: relative; height: clamp(420px, 38vw, 600px); width: 100%; }
 .table__plate {
   position: absolute; left: 50%; top: 50%; width: 84%; aspect-ratio: 1;
   transform: translate(-50%, -50%); border-radius: 50%;
@@ -351,13 +351,16 @@ body::after {
 
 @media (max-width: 900px) {
   .hero__grid { grid-template-columns: 1fr; gap: 24px; }
-  .table { height: 380px; margin-top: 8px; }
+  .table { height: clamp(340px, 50vw, 420px); margin-top: 8px; }
+  .table__plate { width: min(88%, 380px); }
   .hero__scroll { display: none; }
-  .polaroid { width: clamp(120px, 30vw, 150px); }
+  .polaroid { width: clamp(115px, 28vw, 150px); }
 }
 @media (max-width: 500px) {
-  .table { height: 330px; }
-  .polaroid { width: 118px; }
+  .table { height: 320px; }
+  .table__plate { width: 280px; }
+  .polaroid { width: 108px; padding: 6px 6px 8px; }
+  .polaroid figcaption { font-size: 12px; }
 }
 
 /* ==========================================================

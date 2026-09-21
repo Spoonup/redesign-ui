@@ -39,11 +39,11 @@ const PLUS_ICON = (
 );
 
 const POLAROID_SPOTS = [
-  { id: 'chia', left: 6, top: 4, rot: -9 },
-  { id: 'dragon', left: 54, top: 0, rot: 7 },
-  { id: 'modak', left: 60, top: 50, rot: -5 },
-  { id: 'tikki', left: 2, top: 52, rot: 6 },
-  { id: 'walnut', left: 30, top: 27, rot: -2 }
+  { id: 'chia', left: 8, top: 6, rot: -8 },
+  { id: 'dragon', left: 52, top: 4, rot: 7 },
+  { id: 'modak', left: 54, top: 48, rot: -6 },
+  { id: 'tikki', left: 6, top: 48, rot: 6 },
+  { id: 'walnut', left: 28, top: 26, rot: -2 }
 ];
 
 const RIBBON_A = [
@@ -136,37 +136,38 @@ export const HomePage = () => {
           .from('.hero__kicker', { y: 20, opacity: 0, duration: 0.8 }, 0)
           .from('[data-hero-fade]', { y: 30, opacity: 0, duration: 1, stagger: 0.1 }, 0.5)
           .from('.table__plate', { scale: 0.4, opacity: 0, rotate: -90, duration: 1.4 }, 0.2)
-          .from(
+          .fromTo(
             '.polaroid',
             {
-              y: () => -window.innerHeight,
-              rotation: () => gsap.utils.random(-50, 50),
-              duration: 1.3,
-              ease: 'bounce.out',
-              stagger: 0.12
+              y: -60,
+              opacity: 0,
+              scale: 0.85
             },
-            0.4
+            {
+              y: 0,
+              opacity: 1,
+              scale: 1,
+              duration: 0.9,
+              ease: 'back.out(1.5)',
+              stagger: 0.1,
+              clearProps: 'y,scale,opacity'
+            },
+            0.5
           )
-          .from('.table__hint', { opacity: 0, duration: 0.6 }, 1.6)
+          .from('.table__hint', { opacity: 0, duration: 0.6 }, 1.4)
           .fromTo(
             '#hintPath',
             { strokeDasharray: 120, strokeDashoffset: 120 },
             { strokeDashoffset: 0, duration: 1, ease: 'power2.inOut' },
-            1.7
+            1.5
           )
           .from('.hero__proof div', { y: 24, opacity: 0, duration: 0.9, stagger: 0.1 }, 0.9);
       }
 
-      // Initialize Polaroids with initial rotation
-      document.querySelectorAll('.polaroid').forEach((el) => {
-        const r = parseFloat(el.dataset.r || '0');
-        gsap.set(el, { rotation: r });
-      });
-
       // Draggable Polaroids
       let zIndexCounter = 10;
       Draggable.create('.polaroid', {
-        bounds: '#table',
+        bounds: '.hero',
         zIndexBoost: false,
         onPress() {
           this.target.style.zIndex = ++zIndexCounter;
@@ -174,23 +175,23 @@ export const HomePage = () => {
             scale: 1.08,
             rotation: 0,
             boxShadow: '0 40px 60px -20px rgba(16,35,28,.55)',
-            duration: 0.3
+            duration: 0.25
           });
         },
         onRelease() {
           const originalR = parseFloat(this.target.dataset.r || '0');
           gsap.to(this.target, {
             scale: 1,
-            rotation: originalR + gsap.utils.random(-6, 6),
+            rotation: originalR + gsap.utils.random(-4, 4),
             boxShadow: '0 18px 40px -18px rgba(16,35,28,.5)',
-            duration: 0.6,
+            duration: 0.5,
             ease: 'back.out(2)'
           });
         },
         onDrag() {
           gsap.to(this.target, {
-            rotation: gsap.utils.clamp(-20, 20, this.deltaX * 1.2),
-            duration: 0.3
+            rotation: gsap.utils.clamp(-15, 15, this.deltaX * 1.2),
+            duration: 0.2
           });
         }
       });
@@ -608,6 +609,7 @@ export const HomePage = () => {
                   style={{
                     left: `${left}%`,
                     top: `${top}%`,
+                    transform: `rotate(${rot}deg)`,
                     margin: 0
                   }}
                 >
