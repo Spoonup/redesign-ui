@@ -27,9 +27,7 @@ const AppContent = () => {
   const { isCartOpen } = useCart();
   const { isQuickViewOpen } = useQuickView();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(() => {
-    return location.pathname === '/' && !sessionStorage.getItem('su-loaded');
-  });
+  const [isLoading, setIsLoading] = useState(() => location.pathname === '/');
 
   // Smooth scroll
   useSmoothScroll(isCartOpen || isQuickViewOpen || isMobileMenuOpen);
@@ -99,7 +97,6 @@ const AppContent = () => {
 
   const handleLoaderComplete = () => {
     setIsLoading(false);
-    sessionStorage.setItem('su-loaded', '1');
     document.body.classList.remove('is-loading');
   };
 

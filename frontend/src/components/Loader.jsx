@@ -1,46 +1,57 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 
 export const Loader = ({ onComplete }) => {
   const loaderRef = useRef(null);
   const numRef = useRef(null);
+  const [countDisplay, setCountDisplay] = useState(0);
 
   useEffect(() => {
+    document.body.classList.add('is-loading');
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) {
+      document.body.classList.remove('is-loading');
       onComplete?.();
       return;
     }
 
-    const num = numRef.current;
     const loader = loaderRef.current;
-    if (!loader || !num) return;
+    const num = numRef.current;
+    if (!loader) return;
 
+    let isDone = false;
     const target = { v: 0 };
     const shown = { v: 0 };
+    const t0 = performance.now();
+    const minDuration = 1.8; // Smooth 1.8s stirring experience
 
+    // Images load tracking
     const imgs = [...document.querySelectorAll('img')].filter(
       (i) => !i.complete && i.loading !== 'lazy'
     );
-    let loaded = 0;
-    const total = Math.max(imgs.length, 1);
+    let loadedCount = 0;
+    const totalImgs = Math.max(imgs.length, 1);
 
-    imgs.forEach((i) => {
-      const handleLoad = () => {
-        loaded++;
-        target.v = (loaded / total) * 100;
-      };
-      i.addEventListener('load', handleLoad, { once: true });
-      i.addEventListener('error', handleLoad, { once: true });
-    });
-
-    if (!imgs.length) target.v = 100;
-
-    const safetyTimeout = setTimeout(() => {
+    if (imgs.length === 0) {
       target.v = 100;
-      shown.v = 100;
-    }, 2800);
+    } else {
+      imgs.forEach((img) => {
+        const handleImg = () => {
+          loadedCount++;
+          target.v = Math.min(100, (loadedCount / totalImgs) * 100);
+        };
+        img.addEventListener('load', handleImg, { once: true });
+        img.addEventListener('error', handleImg, { once: true });
+      });
+    }
 
+    // Safety fallback
+    const safetyTimer = setTimeout(() => {
+      target.v = 100;
+    }, 2400);
+
+    // Wave horizontal loop
     const waveAnim = gsap.to('#ldWave', {
       x: 100,
       duration: 1.4,
@@ -48,76 +59,89 @@ export const Loader = ({ onComplete }) => {
       repeat: -1
     });
 
+    // Spoon stirring rocking loop
     const spoonAnim = gsap.fromTo(
       '#ldSpoon',
-      { rotate: -12 },
+      { rotation: -14 },
       {
-        rotate: 14,
-        duration: 0.5,
+        rotation: 16,
+        duration: 0.55,
         ease: 'sine.inOut',
         yoyo: true,
-        repeat: -1
+        repeat: -1,
+        transformOrigin: '150px 60px'
       }
     );
 
-    const setWave = gsap.quickSetter('#ldWave', 'y', 'px');
-    const minTime = 1.4;
-    const t0 = performance.now();
-    let finished = false;
+    const setWaveY = gsap.quickSetter('#ldWave', 'y', 'px');
 
     const outro = () => {
-      gsap
-        .timeline({
-          onComplete: () => {
-            waveAnim.kill();
-            spoonAnim.kill();
-            onComplete?.();
-          }
-        })
-        .to('.loader__bowl', {
-          scale: 0.6,
-          rotate: -20,
-          opacity: 0,
-          duration: 0.5,
-          ease: 'back.in(1.7)'
-        })
-        .to('.loader__note', { opacity: 0, y: 20, duration: 0.3 }, 0)
-        .to(loader, { clipPath: 'inset(0 0 100% 0)', duration: 0.8, ease: 'expo.inOut' }, 0.25);
-    };
+      if (isDone) return;
+      isDone = true;
 
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      gsap.ticker.remove(tick);
-      if (num) num.textContent = '100';
-      outro();
+      const tl = gsap.timeline({
+        onComplete: () => {
+          waveAnim.kill();
+          spoonAnim.kill();
+          document.body.classList.remove('is-loading');
+          onComplete?.();
+        }
+      });
+
+      tl.to('.loader__bowl', {
+        scale: 0.65,
+        rotation: -20,
+        opacity: 0,
+        duration: 0.55,
+        ease: 'back.in(1.7)'
+      })
+        .to('.loader__note', { opacity: 0, y: 15, duration: 0.25 }, 0)
+        .to(loader, {
+          clipPath: 'inset(0 0 100% 0)',
+          duration: 0.8,
+          ease: 'expo.inOut'
+        }, 0.2);
     };
 
     const tick = () => {
       shown.v += (target.v - shown.v) * 0.08;
       const elapsed = (performance.now() - t0) / 1000;
-      const v = Math.min(shown.v, (elapsed / minTime) * 100);
-      if (num) num.textContent = String(Math.round(v));
-      setWave(-v * 0.82);
-      if (v >= 99.5) finish();
+      const progress = Math.min(100, Math.max((elapsed / minDuration) * 100, shown.v));
+
+      const rounded = Math.min(100, Math.round(progress));
+      if (num) num.textContent = String(rounded);
+      setWaveY(-progress * 0.82);
+
+      if (progress >= 99.5 && elapsed >= minDuration) {
+        gsap.ticker.remove(tick);
+        if (num) num.textContent = '100';
+        outro();
+      }
     };
 
     gsap.ticker.add(tick);
-    const maxTimeout = setTimeout(finish, 4000);
+
+    // Hard fallback after 4 seconds
+    const maxTimer = setTimeout(() => {
+      gsap.ticker.remove(tick);
+      if (num) num.textContent = '100';
+      outro();
+    }, 4000);
 
     return () => {
-      clearTimeout(safetyTimeout);
-      clearTimeout(maxTimeout);
+      clearTimeout(safetyTimer);
+      clearTimeout(maxTimer);
       gsap.ticker.remove(tick);
       waveAnim.kill();
       spoonAnim.kill();
+      document.body.classList.remove('is-loading');
     };
   }, [onComplete]);
 
   return (
     <div className="loader" id="loader" ref={loaderRef} aria-hidden="true">
       <div className="loader__bowl">
-        <svg viewBox="0 0 200 200">
+        <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
           <defs>
             <clipPath id="bowlClip">
               <path d="M20 92 H180 A80 80 0 0 1 20 92 Z" />

@@ -82,19 +82,33 @@ body::after {
    ========================================================== */
 .loader {
   position: fixed; inset: 0; z-index: 200;
-  display: grid; place-items: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
   background: var(--forest);
   color: var(--paper);
+  padding: 20px;
+  overflow: hidden;
 }
-.loader__bowl { width: min(240px, 55vw); aspect-ratio: 1; position: relative; }
-.loader__bowl svg { width: 100%; height: 100%; overflow: visible; }
+.loader__bowl {
+  width: min(240px, 58vw);
+  max-width: 240px;
+  aspect-ratio: 1;
+  position: relative;
+  margin: 0 auto;
+}
+.loader__bowl svg { width: 100%; height: 100%; overflow: visible; display: block; }
 .loader__count {
   position: absolute; left: 50%; top: 58%;
   transform: translate(-50%, -50%);
-  font-family: var(--f-display); font-size: clamp(38px, 9vw, 68px); color: var(--paper);
+  font-family: var(--f-display); font-size: clamp(36px, 8.5vw, 66px); color: var(--paper);
   text-shadow: 0 3px 0 var(--forest-2);
+  line-height: 1;
+  pointer-events: none;
 }
-.loader__note { position: absolute; bottom: 8vh; left: 0; right: 0; text-align: center; font-family: var(--f-hand); font-size: clamp(18px, 4vw, 22px); color: var(--turmeric); }
+.loader__note {
+  position: absolute; bottom: clamp(24px, 7vh, 60px); left: 20px; right: 20px;
+  text-align: center; font-family: var(--f-hand); font-size: clamp(17px, 4vw, 22px);
+  color: var(--turmeric); margin: 0;
+}
 .loader__panels { position: fixed; inset: 0; z-index: 199; display: flex; pointer-events: none; }
 .loader__panels span { flex: 1; background: var(--turmeric); transform: scaleY(0); transform-origin: bottom; }
 
